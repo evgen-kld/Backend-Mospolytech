@@ -17,27 +17,33 @@
             </div>
             <button type="button" class="btn btn-primary btn-lg">Отправить</button>
             <div class="m-4">
-                <div class="d-flex">
-                    <div class="flex-shrink-0">
-                        <img src="{{ url_for('static', filename='images/avatar.jpg') }}" class="rounded-circle" width="80" height="80" alt="Sample Image">
-                    </div>
-                    <div class="flex-grow-1 ms-3">
-                        <h5>Jhon Carter <small class="text-muted"><i>Posted on January 10, 2021</i></small></h5>
-                        <p>Excellent feature! I love it. One day I'm definitely going to put this Bootstrap component into use and I'll let you know once I do.</p>
+                {% for comment in post.comments %}
+                    <div class="d-flex flex-column">
                         <div class="d-flex mt-4">
                             <div class="flex-shrink-0">
-                                <img src="{{ url_for('static', filename='images/avatar.jpg') }}" class="rounded-circle" width="80" height="80" alt="Sample Image">
+                                <img src="{{ url_for('static', filename='images/avatar.jpg') }}" class="rounded-circle" width="80" height="80">
                             </div>
-                            <div class="flex-grow-1 ms-3">
-                                <h5>Clark Kent <small class="text-muted"><i>Posted on January 12, 2021</i></small></h5>
-                                <p>Thanks, you found this component useful. Don't forget to check out other Bootstrap components as well. They're also very useful.</p>
+                            <div class="flex-grow-1 text-start">
+                                <h5>{{ comment.author }}</h5>
+                                <p class="mb-0">{{ comment.text | truncate(100)}}</p>
                             </div>
                         </div>
+                        
+                        {% for reply in comment.replies %}
+                            <div class="d-flex mt-4 ms-5">
+                                <div class="flex-shrink-0">
+                                    <img src="{{ url_for('static', filename='images/avatar.jpg') }}" class="rounded-circle" width="80" height="80">
+                                </div>
+                                <div class="flex-grow-1 text-start">
+                                    <h5>{{ reply.author }}</h5>
+                                    <p>{{ reply.text | truncate(100)}}</p>
+                                </div>
+                            </div>
+                        {% endfor %}
                     </div>
-                </div>
+                {% endfor %}
             </div>
         </div>
-        <div class="col-2"></div>
     </div>
 </div>
 {% endblock %}
