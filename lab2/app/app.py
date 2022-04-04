@@ -2,9 +2,32 @@ from flask import Flask, render_template, request, make_response
 
 app = Flask(__name__)
 application = app
+    
 
+def number_processing(number):
+    count = 0
+    msg = None
+    flag = 1
+    for i in number:
+        if i.isdigit():
+            count += 1
+    print(number, count)
+    if count != 10 and count != 11:
+        return make_response(render_template('phone.html', flag=0, msg="1 Недопустимый ввод. Неверное количество цифр."))
+    if count == 11:
+        if not number.startswith('+7') and not number.startswith('8'):
+            return make_response(render_template('phone.html', flag=0, msg="2 Недопустимый ввод. Неверное количество цифр."))
+    number = number.replace('+', '').replace('(', '').replace(')', '').replace('-', '').replace('.', '').replace(' ', '')
+    try:
+        int(number)
+    except ValueError:
+        return make_response(render_template('phone.html', flag=0, msg="Недопустимый ввод. В номере телефона встречаются недопустимые символы."))
+    number = f'8-{number[-10]}{number[-9]}{number[-8]}-{number[-7]}{number[-6]}{number[-5]}-{number[-4]}{number[-3]}-{number[-2]}{number[-1]}'
+    return make_response(render_template('phone.html', flag=1, msg=number))
+    
+    
 
-@app.route('/index')
+@app.route('/')
 def index():
     url = request.url
     return render_template('index.html')
@@ -53,3 +76,13 @@ def calc():
             error_msg = 'На ноль делить нельзя'
     response = make_response(render_template('calc.html', result=result, error_msg=error_msg))
     return response
+
+@app.route('/phone', methods=['GET', 'POST'])
+def phone():
+    if request.method == 'POST':
+        number = request.form.get('number')
+        response = number_processing(number)
+    if request.method == 'GET':
+        response = make_response(render_template('phone.html'))
+    return response
+    
