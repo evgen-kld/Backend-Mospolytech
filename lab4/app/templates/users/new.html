@@ -6,6 +6,6 @@
         Создание нового пользователя
     </h1>
 
-    {{ render_user_form(url_for('create'), roles, user) }}
+    {{ render_user_form(url_for('create'), roles, user, password_error_list, login_error_list) }}
 
 {% endblock %}
