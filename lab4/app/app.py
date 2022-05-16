@@ -1,8 +1,9 @@
 from flask import Flask, render_template, session, request, redirect, url_for, flash
-from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required
+from flask_login import LoginManager, UserMixin, current_user, login_user, logout_user, login_required
 from mysql_db import MySQL
 import mysql.connector as connector
 import re 
+import hashlib
 
 
 
@@ -60,6 +61,20 @@ def getLoginErrors(login):
                 login_error_list.add('Допустимы только латинские буквы и цифры')
     if len(login_error_list) != 0:
         return login_error_list
+
+def getLastNameErrors(last_name):
+    last_name_error_list = set()
+    if last_name==None:
+        last_name_error_list.add('Поле не может быть пустым')
+    if len(last_name_error_list) != 0:
+        return last_name_error_list
+
+def getFirstNameErrors(first_name):
+    first_name_error_list = set()
+    if first_name==None:
+        first_name_error_list.add('Поле не может быть пустым')
+    if len(first_name_error_list) != 0:
+        return first_name_error_list
 
 def request_params(params_list):
     params = {}
@@ -124,6 +139,7 @@ def users():
     with mysql.connection.cursor(named_tuple=True) as cursor:
         cursor.execute('SELECT users.*, roles.name as role_name FROM users LEFT JOIN roles ON users.role_id=roles.id;')
         users = cursor.fetchall()
+        print(users)
     return render_template('users/index.html', users=users)
 
 @app.route('/users/new')
@@ -137,12 +153,17 @@ def create():
     params = request_params(CREATE_PARAMS)
     params['role_id'] = int(params['role_id']) if params['role_id'] else None
     password_error_list = getPassErrors(params.get('password'))
-    login_error_list = getLoginErrors((params.get('login')))
-    if password_error_list or login_error_list:
+    login_error_list = getLoginErrors(params.get('login'))
+    last_name_error_list = getLastNameErrors(params.get('last_name'))
+    first_name_error_list = getFirstNameErrors(params.get('first_name'))
+    if password_error_list or login_error_list or last_name_error_list or first_name_error_list:
         print(password_error_list)
         print(login_error_list)
+        print(last_name_error_list)
+        print(first_name_error_list)
         flash('Введены некоректные данные. Повторите попытку', 'danger')
-        return render_template('users/new.html', user=params, roles=load_roles(), password_error_list=password_error_list, login_error_list=login_error_list)
+        return render_template('users/new.html', user=params, roles=load_roles(), password_error_list=password_error_list,
+         login_error_list=login_error_list, last_name_error_list=last_name_error_list, first_name_error_list=first_name_error_list)
     with mysql.connection.cursor(named_tuple=True) as cursor:
         try:
             cursor.execute(('INSERT INTO users (login, password_hash, last_name, first_name, middle_name, role_id)'
@@ -199,3 +220,47 @@ def delete(user_id):
             return redirect(url_for('users'))
     flash('Пользователь был успешно удалён!', 'success')
     return redirect(url_for('users'))
+
+@app.route('/chenge_password', methods=['POST', 'GET'])
+def chenge_password():   
+    if request.method == 'GET':
+        return render_template('chenge_password.html')
+    else:
+        now_pass = request.form.get('nowPassword')
+        byte = bytes(now_pass, encoding = 'utf-8')
+        print(hashlib.sha256(byte).hexdigest())
+        with mysql.connection.cursor(named_tuple=True) as cursor:
+            cursor.execute('SELECT password_hash FROM users WHERE id=%s;', (current_user.get_id(), ))
+            response = cursor.fetchone()
+            print(response.password_hash)
+        if hashlib.sha256(byte).hexdigest() == response.password_hash:
+            new_pass = request.form.get('newPassword')
+            password_error_list = getPassErrors(new_pass)
+            print(password_error_list)
+            if password_error_list:
+                return render_template('chenge_password.html', password_error_list=password_error_list)
+            repeat_pass = request.form.get('repeatPassword')
+            if new_pass == repeat_pass:
+                if now_pass != new_pass:
+                    with mysql.connection.cursor(named_tuple=True) as cursor:
+                        try:
+                            cursor.execute(('UPDATE users SET PASSWORD_HASH=SHA2(%s, 256) WHERE id=%s;'), (new_pass, current_user.get_id(), ))
+                            mysql.connection.commit()
+                        except connector.Error:
+                            flash('Ну удалось изменить пароль!', 'danger')
+                            return redirect(url_for('chenge_password'))
+                    flash('Пароль был успешно иизменён!', 'success')
+                    return redirect(url_for('index'))
+                else:
+                    flash('Старый и новый пароли не должны совпадать', 'danger')
+                    return redirect(url_for('chenge_password'))
+            else:
+                flash('Пароли должны совпадать', 'danger')
+                return redirect(url_for('chenge_password'))
+        else:
+            flash('Неверный пароль', 'danger')
+            return redirect(url_for('chenge_password'))
+
+
+
+
