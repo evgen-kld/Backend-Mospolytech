@@ -27,7 +27,7 @@ def getPassErrors(password):
     if password==None:
         password_error_list.add('Поле не может быть пустым')
     else:
-        if len(password) > 128 or len(password) < 8 and password ==None:
+        if len(password) > 128 or len(password) < 8:
             password_error_list.add('Пароль должен быть длинной больше 8 и меньше 128 символов')
         if not any(c.islower() for c in password):
             password_error_list.add('Пароль должен содержать строчную букву')
@@ -139,7 +139,6 @@ def users():
     with mysql.connection.cursor(named_tuple=True) as cursor:
         cursor.execute('SELECT users.*, roles.name as role_name FROM users LEFT JOIN roles ON users.role_id=roles.id;')
         users = cursor.fetchall()
-        print(users)
     return render_template('users/index.html', users=users)
 
 @app.route('/users/new')
@@ -157,10 +156,6 @@ def create():
     last_name_error_list = getLastNameErrors(params.get('last_name'))
     first_name_error_list = getFirstNameErrors(params.get('first_name'))
     if password_error_list or login_error_list or last_name_error_list or first_name_error_list:
-        print(password_error_list)
-        print(login_error_list)
-        print(last_name_error_list)
-        print(first_name_error_list)
         flash('Введены некоректные данные. Повторите попытку', 'danger')
         return render_template('users/new.html', user=params, roles=load_roles(), password_error_list=password_error_list,
          login_error_list=login_error_list, last_name_error_list=last_name_error_list, first_name_error_list=first_name_error_list)

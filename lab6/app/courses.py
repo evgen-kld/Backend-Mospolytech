@@ -23,11 +23,10 @@ def search_params():
         'category_ids': request.args.getlist('category_ids'),
     }
 
-def search_params_reviews(course_id):
+def search_params_reviews(course_id, sort):
     return {
-        'name': request.args.get('name'),
-        'category_ids': request.args.getlist('category_ids'),
-        'course_id': course_id
+        'course_id': course_id,
+        'sort': sort
     }
 
 @bp.route('/')
@@ -70,24 +69,23 @@ def create():
 
 @bp.route('/<int:course_id>', methods=['POST', 'GET'])
 def show(course_id):
+    course = Course.query.get(course_id)
     if request.method == 'POST':
         text = request.form.get('review')
         mark = int(request.form.get('mark'))
         review = Review(rating=mark, text=text, course_id=course_id, user_id=current_user.get_id())
-        courses = Course.query.filter_by(id=course_id).first()
-        courses.rating_num += 1
-        courses.rating_sum += int(review.rating)
+        course.rating_num += 1
+        course.rating_sum += int(review.rating)
         db.session.add(review)
         db.session.commit()
         flash(f'Отзыв был успешно добавлен!', 'success')
     if request.args.get('show_all_reviews'):
-        return redirect(url_for('courses.show_all_rewiews', course_id=course_id))
-    course = Course.query.get(course_id)
+        return redirect(url_for('courses.show_all_rewiews', course_id=course_id))  
     reviews = Review.query.filter_by(course_id=course_id).limit(5)
     flag = True
     if Review.query.filter_by(course_id=course_id, user_id=int(current_user.get_id())).first():
         flag = False
-    return render_template('courses/show.html', course=course, reviews=reviews, flag=flag, search_params=search_params_reviews(course_id))
+    return render_template('courses/show.html', course=course, reviews=reviews, flag=flag)
 
 
 @bp.route('/<int:course_id>/reviews')
@@ -95,7 +93,7 @@ def reviews(course_id):
     sort = request.args.get('sort')
     page = request.args.get('page', 1, type=int)
     reviews = ReviewsFilter(course_id).perform_date_desc()
-    courses = Course.query.filter_by(id=course_id).first()
+    course = Course.query.filter_by(id=course_id).first()
     pagination = reviews.paginate(page, PER_PAGE_REVIEWS)
     reviews = pagination.items 
     if sort == 'new':
@@ -106,4 +104,4 @@ def reviews(course_id):
         reviews = ReviewsFilter(course_id).perform_rating_desc()
     if sort == 'bad':
         reviews = ReviewsFilter(course_id).perform_rating_asc()
-    return render_template('courses/reviews.html', reviews=reviews, courses=courses, type_of_sort=sort, pagination=pagination, search_params=search_params_reviews(course_id))
+    return render_template('courses/reviews.html', reviews=reviews, course=course, type_of_sort=sort, pagination=pagination, search_params=search_params_reviews(course_id, sort))
