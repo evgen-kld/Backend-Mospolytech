@@ -23,6 +23,11 @@
                     </a>
                 </div>
                 {% if current_user.is_authenticated %}
+                <div class="col align-self-end mx-3">
+                    <p class="text-light text-end">
+                        {{ current_user.login }}
+                    </p>
+                </div>
                     <a class="btn btn-outline-light" href="{{ url_for('auth.logout') }}">Выйти</a>
                 {% else %}
                     <a class="btn btn-outline-light" href="{{ url_for('auth.login') }}">Войти</a>
