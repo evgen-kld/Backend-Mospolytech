@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from sqlalchemy import MetaData
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -21,6 +21,7 @@ db = SQLAlchemy(app, metadata=metadata)
 migrate = Migrate(app, db)
 
 from auth import bp as auth_bp, init_login_manager
+from tools import BooksFilter
 
 app.register_blueprint(auth_bp)
 
@@ -28,7 +29,14 @@ init_login_manager(app)
 
 from models import *
 
+PER_PAGE = 10
+
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    page = request.args.get('page', 1, type=int)
+    books = BooksFilter().perform()
+    pagination = books.paginate(page, PER_PAGE)
+    books = pagination.items
+    rating=Book.rating
+    return render_template('index.html', books=books, pagination=pagination, rating=rating)

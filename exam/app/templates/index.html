@@ -6,11 +6,66 @@
         <h1 class="title mb-5 font-weight-bold">Электронная библиотека</h1>
 
         <div class="container">
-            <p class="description w-75 mb-5 px-3 mx-auto">
-                ЛитРес – самая большая библиотека электронных книг – скачивай, читай и слушай свыше 805 тысяч лицензионных электронных книг и аудиокниг для любых устройств. На LitRes вы найдете рейтинги лучших книг, отзывы, рецензии, рекомендации, популярные авторы и многое другое – заходи!
-            </p>
+            <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">Название</th>
+                    <th scope="col">Жанр</th>
+                    <th scope="col">Год</th>
+                    <th scope="col">Средняя оценка</th>
+                    <th scope="col">Количество рецензий</th>
+                    <th scope="col">Действия</th>
+                  </tr>
+                </thead>
+                <tbody>
+                    {% for book in books %}
+                  <tr>
+                    <th>{{ book.title }}</th>
+                    <th>
+                        {% for genre in book.genres %}
+                            {{ genre.genre_name }}<br>
+                        {% endfor %}
+                    </th>
+                    <th>{{ book.year }}</th>
+                    <th>{{ book.rating }}</th>
+                    <td>{{ book.reviews|length }}</td>
+                    <td>
+                        <div class="btn-group">
+                            <a class="btn btn-primary" href="#">Просмотр</a>
+                            <a class="btn btn-secondary" href="#">Редактирование</a>
+                            <button type="button" class="btn btn-danger" data-url="#" data-bs-toggle="modal" data-bs-target="#delete-user-modal">
+                                Удалить
+                            </button>
+                        </div>
+                    </td>
+                  </tr>
+                    {% endfor %}
+                </tbody>
+              </table>
         </div>
         
     </div>
 </div>
+
+<div class="modal fade" id="delete-user-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Удаление книги</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Вы уверены, что хотите удалить книгу <span id="user-name"></span>?
+          <form action="" method="POST">
+            <input type="submit" id="delete-btn" class="d-none">
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Нет</button>
+          <label class="btn btn-danger" for="delete-btn">ДА</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
 {% endblock %}

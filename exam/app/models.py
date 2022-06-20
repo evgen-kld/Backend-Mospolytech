@@ -50,10 +50,22 @@ class Book(db.Model):
     year = db.Column(db.Date, nullable=False)
     publisher = db.Column(db.String(30), nullable=False)
     author = db.Column(db.String(30), nullable=False)
+    rating_sum = db.Column(db.Integer, nullable=False, default=0)
+    rating_num = db.Column(db.Integer, nullable=False, default=0)
     amount = db.Column(db.Integer, nullable=False)
 
     def __repr__(self):
-        return '<User: %r>' % self.title
+        return '<Book: %r>' % self.title
+
+    @property
+    def rating(self):
+        if self.rating_num > 0:
+            return self.rating_sum / self.rating_num
+        return 0
+
+    genres = db.relationship('Genre', secondary=books_genres, lazy='subquery', backref=db.backref('books', lazy=True))
+    reviews = db.relationship('Review')
+
 
 class Genre(db.Model):
     __tablename__ = 'genres'
@@ -61,7 +73,7 @@ class Genre(db.Model):
     genre_name = db.Column(db.String(50), nullable=False, unique=True)
 
     def __repr__(self):
-        return '<User: %r>' % self.genre_name
+        return '<Genre: %r>' % self.genre_name
 
 class Cover(db.Model):
     __tablename__ = 'covers'
@@ -72,7 +84,7 @@ class Cover(db.Model):
     book_id = db.Column(db.Integer, db.ForeignKey('books.id'), unique=True)
 
     def __repr__(self):
-        return '<Image: %r>' % self.file_name
+        return '<Cover: %r>' % self.file_name
 
     @property
     def storage_filename(self):
