@@ -24,8 +24,8 @@
                     <tr>
                         <th>{{ book.title }}</th>
                         <th>
-                            {% for genre in book.genres %}
-                            {{ genre.genre_name }}<br>
+                            {% for genre in book_genre %}
+                            {% if genre.books_id == book.id %}{{ genre.genre.genre_name }}</br>{% endif %}
                             {% endfor %}
                         </th>
                         <th>{{ book.year }}</th>
@@ -33,7 +33,7 @@
                         <td>{{ book.reviews|length }}</td>
                         <td>
                             <div class="btn-group">
-                                <a class="btn btn-primary" href="#">Просмотр</a>
+                                <a class="btn btn-primary" href="{{ url_for('book.show', book_id=book.id) }}">Просмотр</a>
                                 <a class="btn btn-secondary" href="{{ url_for('book.edit', book_id=book.id) }}">Редактирование</a>
                                 <button type="button" class="btn btn-danger" data-url="#" data-bs-toggle="modal"
                                     data-bs-target="#delete-user-modal">

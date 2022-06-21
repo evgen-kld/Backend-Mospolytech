@@ -94,7 +94,9 @@ class Cover(db.Model):
 
     @property
     def url(self):
-        return url_for('image', image_id=self.id)
+        return url_for('image', cover_id=self.id)
+
+    book = db.relationship('Book')
 
 
 class Review(db.Model):

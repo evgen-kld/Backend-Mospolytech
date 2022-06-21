@@ -1,34 +1,42 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<div class="container">
 
-    <h1 class="text-center">
-        Просмотр данных пользователя
-    </h1>
-
+    <h2 class="my-3 text-center text-uppercase font-weight-bold">Просмотр книги</h2>
+    
     <table class="table">
         <tbody>
             <tr>
-                <td>Логин</td>
-                <td>{{ user.login }}</td>
+                <td>Название книги</td>
+                <td>{{ book.title }}</td>
             </tr>
             <tr>
-                <td>Фамилия</td>
-                <td>{{ user.last_name }}</td>
+                <td>Жанры</td>
+                <td>
+                    {% for genre in book_genre %}
+                    {% if genre.books_id == book.id %}{{ genre.genre.genre_name }}</br>{% endif %}
+                    {% endfor %}
+                </td>
             </tr>
             <tr>
-                <td>Имя</td>
-                <td>{{ user.first_name }}</td>
-            </tr>
-            <tr>
-                <td>Отчество</td>
-                <td>{{ user.middle_name or '' }}</td>
-            </tr>
-            <tr>
-                <td>Дата регистрации</td>
-                <td>{{ user.created_at }}</td>
-            </tr>
-        </tbody>
-    </table>
+            <td>Автор</td>
+            <td>{{ book.author }}</td>
+        </tr>
+        <tr>
+            <td>Издательство</td>
+            <td>{{ book.publisher }}</td>
+        </tr>
+        <tr>
+            <td>Описание книги</td>
+            <td>{{ book.description }}</td>
+        </tr>
+    </tbody>
+</table>
+<div class="col-md-3 mb-3 mb-md-0 d-flex align-items-center justify-content-center">
+    <div class="course-logo" style="background-image: url({{ img }});">
+    </div>
+</div>
+</div>
 
 {% endblock %}

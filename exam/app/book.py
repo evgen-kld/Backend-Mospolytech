@@ -1,9 +1,9 @@
-from flask import Blueprint, redirect, render_template, request, url_for, flash
+from flask import Blueprint, redirect, render_template, request, url_for, flash, abort, send_from_directory
 from app import db
 
 bp = Blueprint('book', __name__, url_prefix='/book')
 
-from models import Genre, Book, Book_Genre
+from models import Genre, Book, Book_Genre, Cover
 from tools import ImageSaver
 
 
@@ -63,6 +63,16 @@ def edit(book_id):
             db.session.commit()
         flash(f'Книга "{book.title}" успешно изменена!', 'success')
         return redirect(url_for('index'))
+
+@bp.route('/<int:book_id>/show')
+def show(book_id):
+    book = Book.query.get(book_id)
+    book_genre = Book_Genre.query.all()
+    img = Cover.query.filter_by(book_id=book_id).first()
+    img = img.url
+    print(img)
+    return render_template('book/show.html', book=book, book_genre=book_genre, img=img)
+
     
 
 

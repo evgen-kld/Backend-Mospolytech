@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, abort, send_from_directory
 from sqlalchemy import MetaData
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -41,4 +41,12 @@ def index():
     pagination = books.paginate(page, PER_PAGE)
     books = pagination.items
     rating=Book.rating
-    return render_template('index.html', books=books, pagination=pagination, rating=rating, search_params={})
+    book_genre = Book_Genre.query.all()
+    return render_template('index.html', books=books, book_genre=book_genre, pagination=pagination, rating=rating, search_params={})
+
+@app.route('/media/images/<cover_id>')
+def image(cover_id):
+    cover = Cover.query.get(cover_id)
+    if cover is None:
+        abort(404)
+    return send_from_directory(app.config['UPLOAD_FOLDER'], cover.storage_filename)
