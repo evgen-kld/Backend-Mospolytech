@@ -1,5 +1,6 @@
 from app import db
 import sqlalchemy as sa
+from sqlalchemy.dialects import mysql
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 import os
@@ -34,20 +35,21 @@ class Role(db.Model):
     def __repr__(self):
         return '<User: %r>' % self.role_name
 
+class Book_Genre(db.Model):
+    __tablename__ = 'books_genres'
+    books_id = db.Column(db.Integer, db.ForeignKey('books.id'), primary_key=True)
+    genres_id = db.Column(db.Integer, db.ForeignKey('genres.id'), primary_key=True)
 
+    book = db.relationship('Book')
+    genre = db.relationship('Genre')
 
-
-books_genres = db.Table('books_genres',
-    db.Column('books_id', db.Integer, db.ForeignKey('books.id'), primary_key=True),
-    db.Column('genres_id', db.Integer, db.ForeignKey('genres.id'), primary_key=True)
-)
 
 class Book(db.Model):
     __tablename__ = 'books'
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(50), nullable=False, unique=True)
-    short_description = db.Column(db.Text)
-    year = db.Column(db.Date, nullable=False)
+    description = db.Column(db.Text)
+    year = db.Column(mysql.YEAR, nullable=False)
     publisher = db.Column(db.String(30), nullable=False)
     author = db.Column(db.String(30), nullable=False)
     rating_sum = db.Column(db.Integer, nullable=False, default=0)
@@ -63,7 +65,6 @@ class Book(db.Model):
             return self.rating_sum / self.rating_num
         return 0
 
-    genres = db.relationship('Genre', secondary=books_genres, lazy='subquery', backref=db.backref('books', lazy=True))
     reviews = db.relationship('Review')
 
 

@@ -56,7 +56,7 @@ const TOOLBAR_ITEMS = [
 ]
 
 window.onload = function() {
-    let background_img_field = document.getElementById('background_img');
+    let background_img_field = document.getElementById('cover_img');
     if (background_img_field) {
         background_img_field.onchange = imagePreviewHandler;
     }

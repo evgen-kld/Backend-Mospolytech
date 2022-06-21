@@ -11,7 +11,7 @@
                   <tr>
                     <th scope="col">Название</th>
                     <th scope="col">Жанр</th>
-                    <th scope="col">Год</th>
+                    <th scope="col">Дата издания</th>
                     <th scope="col">Средняя оценка</th>
                     <th scope="col">Количество рецензий</th>
                     <th scope="col">Действия</th>
@@ -42,6 +42,9 @@
                     {% endfor %}
                 </tbody>
               </table>
+              <div class="text-center my-3">
+                <a class="btn btn-lg btn-dark" href="{{ url_for('book.new') }}">Добавить новую книгу</a>
+            </div>
         </div>
         
     </div>
