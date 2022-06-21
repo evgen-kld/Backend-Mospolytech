@@ -41,4 +41,4 @@ def index():
     pagination = books.paginate(page, PER_PAGE)
     books = pagination.items
     rating=Book.rating
-    return render_template('index.html', books=books, pagination=pagination, rating=rating)
+    return render_template('index.html', books=books, pagination=pagination, rating=rating, search_params={})

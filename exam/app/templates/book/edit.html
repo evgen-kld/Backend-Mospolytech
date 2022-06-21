@@ -1,11 +1,12 @@
 {% extends 'base.html' %}
-{% from 'users/form.html' import render_user_form %}
+{% from 'book/form.html' import render_book_form %}
 
 {% block content %}
-    <h1>
-        Редактирование пользователя
-    </h1>
-
-    {{ render_user_form(url_for('update', user_id=user.id), roles, current_user, user) }}
-
+<div class="container">
+    
+    <h2 class="my-3 text-center text-uppercase font-weight-bold">Редактирование книги</h2>
+    
+    {{ render_book_form(url_for('book.edit', book_id=book.id), genres, book, selected_genres_list) }}
+    
+</div>
 {% endblock %}
