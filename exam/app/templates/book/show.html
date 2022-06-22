@@ -37,6 +37,9 @@
     <div class="course-logo" style="background-image: url({{ img }});">
     </div>
 </div>
+<div class="text-center my-3">
+    <a class="btn btn-lg btn-dark" href="{{ url_for('book.review', book_id=book.id) }}">Оставить отзыв</a>
+</div>
 </div>
 
 {% endblock %}

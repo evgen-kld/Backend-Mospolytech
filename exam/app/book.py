@@ -1,9 +1,10 @@
 from flask import Blueprint, redirect, render_template, request, url_for, flash, abort, send_from_directory
+from flask_login import current_user
 from app import db
 
 bp = Blueprint('book', __name__, url_prefix='/book')
 
-from models import Genre, Book, Book_Genre, Cover
+from models import Genre, Book, Book_Genre, Cover, Review
 from tools import ImageSaver
 
 
@@ -72,6 +73,22 @@ def show(book_id):
     img = img.url
     print(img)
     return render_template('book/show.html', book=book, book_genre=book_genre, img=img)
+
+@bp.route('/<int:book_id>/review', methods=['GET', 'POST'])
+def review(book_id):
+    book = Book.query.get(book_id)
+    if request.method == 'POST':
+        text = request.form.get('review')
+        mark = int(request.form.get('mark'))
+        review = Review(rating=mark, text=text, book_id=book_id, user_id=current_user.get_id())
+        book.rating_num += 1
+        book.rating_sum += int(review.rating)
+        db.session.add(review)
+        db.session.commit()
+        flash(f'Отзыв был успешно добавлен!', 'success')
+        return redirect(url_for('book.show', book_id=book.id))
+    if request.method == 'GET':
+        return render_template('book/review.html', book=book)
 
     
 
