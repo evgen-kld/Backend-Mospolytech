@@ -1,5 +1,6 @@
 'use strict';
 
+
 function imagePreviewHandler(event) {
     if (event.target.files && event.target.files[0]) {
         let reader = new FileReader();
@@ -56,6 +57,13 @@ const TOOLBAR_ITEMS = [
 ]
 
 window.onload = function() {
+    var myModalEl = document.getElementById('delete-book-modal')
+    myModalEl.addEventListener('show.bs.modal', function (event) {
+        let form = this.querySelector('form');
+        form.action = event.relatedTarget.dataset.url;
+        let userNameEl = document.getElementById('book-title');
+        userNameEl.innerHTML = event.relatedTarget.closest('th').querySelector('.book-title').textContent;
+})
     let background_img_field = document.getElementById('cover_img');
     if (background_img_field) {
         background_img_field.onchange = imagePreviewHandler;

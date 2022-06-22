@@ -1,6 +1,7 @@
 from flask import Blueprint, redirect, render_template, request, url_for, flash, abort, send_from_directory
 from flask_login import current_user
 from app import db
+import os
 
 bp = Blueprint('book', __name__, url_prefix='/book')
 
@@ -73,6 +74,23 @@ def show(book_id):
     img = img.url
     print(img)
     return render_template('book/show.html', book=book, book_genre=book_genre, img=img)
+
+
+@bp.route('/<int:book_id>/delete', methods=['POST'])
+def delete(book_id):
+    if request.method == 'POST':
+        book = Book.query.filter_by(id=book_id).first()
+        db.session.delete(book)
+        db.session.commit()
+        try:
+            img = Cover.query.filter_by(book_id=book_id).first()
+            img_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'media', 'images', img.storage_filename)
+            os.remove(img_path)
+        except:
+            pass
+        flash(f'Книга успешно удалена!', 'success')
+        return redirect(url_for('index'))
+
 
 @bp.route('/<int:book_id>/review', methods=['GET', 'POST'])
 def review(book_id):

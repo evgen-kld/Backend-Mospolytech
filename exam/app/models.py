@@ -14,7 +14,7 @@ class User(db.Model, UserMixin):
     last_name = db.Column(db.String(20), nullable=False)
     first_name = db.Column(db.String(20), nullable=False)
     middle_name = db.Column(db.String(20))
-    role_id = db.Column(db.Integer, db.ForeignKey('roles.id'), nullable=False)
+    role_id = db.Column(db.Integer, db.ForeignKey('roles.id', ondelete='CASCADE'), nullable=False)
     password_hash = db.Column(db.String(200), nullable=False)
 
     def __repr__(self):
@@ -37,8 +37,8 @@ class Role(db.Model):
 
 class Book_Genre(db.Model):
     __tablename__ = 'books_genres'
-    books_id = db.Column(db.Integer, db.ForeignKey('books.id'), primary_key=True)
-    genres_id = db.Column(db.Integer, db.ForeignKey('genres.id'), primary_key=True)
+    books_id = db.Column(db.Integer, db.ForeignKey('books.id', ondelete='CASCADE'), primary_key=True)
+    genres_id = db.Column(db.Integer, db.ForeignKey('genres.id', ondelete='CASCADE'), primary_key=True)
 
     book = db.relationship('Book')
     genre = db.relationship('Genre')
@@ -82,7 +82,7 @@ class Cover(db.Model):
     file_name = db.Column(db.String(100), nullable=False)
     mime_type = db.Column(db.String(100), nullable=False)
     md5_hash = db.Column(db.String(100), nullable=False, unique=True)
-    book_id = db.Column(db.Integer, db.ForeignKey('books.id'), unique=True)
+    book_id = db.Column(db.Integer, db.ForeignKey('books.id', ondelete='CASCADE'), unique=True)
 
     def __repr__(self):
         return '<Cover: %r>' % self.file_name
@@ -102,8 +102,8 @@ class Cover(db.Model):
 class Review(db.Model):
     __tablename__ = 'reviews'
     id = db.Column(db.Integer, primary_key=True)
-    book_id = db.Column(db.Integer, db.ForeignKey('books.id'))
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    book_id = db.Column(db.Integer, db.ForeignKey('books.id', ondelete='CASCADE'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'))
     rating = db.Column(db.Integer, nullable=False)
     text = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, server_default=sa.sql.func.now())

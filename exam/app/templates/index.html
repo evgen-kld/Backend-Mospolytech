@@ -22,7 +22,7 @@
                 <tbody>
                     {% for book in books %}
                     <tr>
-                        <th>{{ book.title }}</th>
+                        <th class="book-title">{{ book.title }}</th>
                         <th>
                             {% for genre in book_genre %}
                             {% if genre.books_id == book.id %}{{ genre.genre.genre_name }}</br>{% endif %}
@@ -33,10 +33,13 @@
                         <td>{{ book.reviews|length }}</td>
                         <td>
                             <div class="btn-group">
-                                <a class="btn btn-primary" href="{{ url_for('book.show', book_id=book.id) }}">Просмотр</a>
-                                <a class="btn btn-secondary" href="{{ url_for('book.edit', book_id=book.id) }}">Редактирование</a>
-                                <button type="button" class="btn btn-danger" data-url="#" data-bs-toggle="modal"
-                                    data-bs-target="#delete-user-modal">
+                                <a class="btn btn-primary"
+                                    href="{{ url_for('book.show', book_id=book.id) }}">Просмотр</a>
+                                <a class="btn btn-secondary"
+                                    href="{{ url_for('book.edit', book_id=book.id) }}">Редактирование</a>
+                                <button type="button" class="btn btn-danger"
+                                    data-url="{{ url_for('book.delete', book_id=book.id) }}" data-bs-toggle="modal"
+                                    data-bs-target="#delete-book-modal">
                                     Удалить
                                 </button>
                             </div>
@@ -45,7 +48,7 @@
                     {% endfor %}
                 </tbody>
             </table>
-            
+
             <div class="mb-5">
                 {{ render_pagination(pagination, request.endpoint, search_params) }}
             </div>
@@ -58,7 +61,7 @@
     </div>
 </div>
 
-<div class="modal fade" id="delete-user-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="delete-book-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -66,14 +69,14 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                Вы уверены, что хотите удалить книгу <span id="user-name"></span>?
+                Вы уверены, что хотите удалить книгу <span id="book-title"></span>?
                 <form action="" method="POST">
                     <input type="submit" id="delete-btn" class="d-none">
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Нет</button>
-                <label class="btn btn-danger" for="delete-btn">ДА</label>
+                <label class="btn btn-danger" for="delete-btn">Да</label>
             </div>
         </div>
     </div>
