@@ -78,7 +78,11 @@ def show(book_id):
     img = Cover.query.filter_by(book_id=book_id).first()
     img = img.url
     print(img)
-    return render_template('book/show.html', book=book, book_genre=book_genre, img=img)
+    if current_user.is_authenticated:
+        review = Review.query.filter_by(user_id=current_user.id, book_id=book_id).first()
+    else:
+        review = False
+    return render_template('book/show.html', book=book, book_genre=book_genre, img=img, review=review)
 
 
 @bp.route('/<int:book_id>/delete', methods=['POST'])
