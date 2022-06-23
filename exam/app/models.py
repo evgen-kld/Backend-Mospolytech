@@ -1,8 +1,9 @@
-from app import db
+from app import db, app
 import sqlalchemy as sa
 from sqlalchemy.dialects import mysql
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
+from user_policy import UserPolicy
 import os
 from flask import url_for
 
@@ -25,6 +26,21 @@ class User(db.Model, UserMixin):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+    @property
+    def is_admin(self):
+        return self.role_id == app.config.get('ADMIN_ROLE_ID')
+    
+    @property
+    def is_moder(self):
+        return self.role_id == app.config.get('MODER_ROLE_ID')
+
+    def can(self, action):
+        users_policy = UserPolicy()
+        method = getattr(users_policy, action, None)
+        if method is not None:
+            return method()
+        return False
 
 class Role(db.Model):
     __tablename__ = 'roles'

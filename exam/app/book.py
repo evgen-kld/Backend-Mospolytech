@@ -1,7 +1,9 @@
 from flask import Blueprint, redirect, render_template, request, url_for, flash, abort, send_from_directory
-from flask_login import current_user
+from flask_login import current_user, login_required
 from app import db
 import os
+import bleach
+from auth import check_rights
 
 bp = Blueprint('book', __name__, url_prefix='/book')
 
@@ -10,6 +12,7 @@ from tools import ImageSaver
 
 
 @bp.route('/new', methods=['GET', 'POST'])
+@check_rights('new')
 def new():
     if request.method == 'GET':
         genres = Genre.query.all()
@@ -20,7 +23,7 @@ def new():
         publisher = request.form.get('publisher')
         amount = request.form.get('amount')
         year = request.form.get('year')
-        description = request.form.get('description')
+        description = bleach.clean(request.form.get('description'))
         book = Book(title=title, description=description, year=year, publisher=publisher, author=author, amount=amount)
         db.session.add(book)
         db.session.commit()
@@ -37,6 +40,7 @@ def new():
 
 
 @bp.route('/<int:book_id>/edit', methods=['GET', 'POST'])
+@check_rights('edit')
 def edit(book_id):
     book = Book.query.get(book_id)
     genres = Genre.query.all()
@@ -53,7 +57,7 @@ def edit(book_id):
         book.publisher = request.form.get('publisher')
         book.amount = request.form.get('amount')
         book.year = request.form.get('year')
-        book.description = request.form.get('description')
+        book.description = bleach.clean(request.form.get('description'))
         db.session.commit()
         while Book_Genre.query.filter_by(books_id=book_id).first():
             db.session.delete(Book_Genre.query.filter_by(books_id=book_id).first())
@@ -66,6 +70,7 @@ def edit(book_id):
         flash(f'Книга "{book.title}" успешно изменена!', 'success')
         return redirect(url_for('index'))
 
+
 @bp.route('/<int:book_id>/show')
 def show(book_id):
     book = Book.query.get(book_id)
@@ -77,6 +82,7 @@ def show(book_id):
 
 
 @bp.route('/<int:book_id>/delete', methods=['POST'])
+@check_rights('delete')
 def delete(book_id):
     if request.method == 'POST':
         book = Book.query.filter_by(id=book_id).first()
@@ -93,6 +99,7 @@ def delete(book_id):
 
 
 @bp.route('/<int:book_id>/review', methods=['GET', 'POST'])
+@login_required
 def review(book_id):
     book = Book.query.get(book_id)
     if request.method == 'POST':
