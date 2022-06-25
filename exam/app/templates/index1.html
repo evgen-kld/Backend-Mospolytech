@@ -3,53 +3,11 @@
 
 
 {% block content %}
+<div class="h-100 text-center d-flex p-3 bg-light">
+    <div class="m-auto">
+        <h1 class="title mb-5 font-weight-bold">Электронная библиотека</h1>
 
-
-<h1 class="title my-3 font-weight-bold text-center">Электронная библиотека</h1>
-<div class="container"> 
-    <form method="GET">
-        <div class="col-md-12 d-flex flex-column">
-            <div class="mb-3">
-                <label for="title">Название книги</label>
-                <input class="form-control" type="text" name="title" id="title" value="{{ title or '' }}">
-            </div>
-            <div class="mb-3">
-                <label for="genre_id">Жанр</label>
-                <select class="form-select" name="genre_id" id="genre_id" multiple size="3">
-                    {% for genre in genres %}
-                    <option {% if genre.id in genres_list %}selected{% endif %} value="{{ genre.id }}">{{ genre.genre_name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="mb-3">
-                <label for="year">Год</label>
-                <select class="form-select" name="year" id="year" multiple size="3">
-                    {% for year in years %}
-                    <option {% if year in years_list %}selected{% endif %} value="{{ year }}">{{ year }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="mb-3">
-                <label for="amount_from">Количество страниц от</label>
-                <input class="form-control" name="amount_from" type="number" id="amount_from" value="{{ amount_from or '' }}">
-            </div>
-            <div class="mb-3">
-                <label for="amount_to">Количество страниц до</label>
-                <input class="form-control" name="amount_to" type="number" id="amount_to" value="{{ amount_to or '' }}">
-            </div>
-            <div class="mb-3">
-                <label for="author">Автор</label>
-                <input class="form-control" type="text" name="author" id="author" value="{{ author or '' }}">
-            </div>
-        </div>
-        <div class="mb-3 text-center">
-            <button type="submit" class="btn btn-primary">Поиск</button>
-        </div>
-    </form>
-    {% if flag %}
-    <div class="h-100 text-center d-flex p-3">
-        <div class="m-auto">
-
+        <div class="container">
             <table class="table">
                 <thead>
                     <tr>
@@ -95,6 +53,7 @@
                     {% endfor %}
                 </tbody>
             </table>
+
             <div class="mb-5">
                 {{ render_pagination(pagination, request.endpoint, search_params) }}
             </div>
@@ -104,11 +63,8 @@
             </div>
             {% endif %}
         </div>
+
     </div>
-    {% endif %}
-    {% if not flag %}
-        <h3 class="title my-3 font-weight-bold text-center">Ничего не найдено</h3>
-    {% endif %}
 </div>
 
 <div class="modal fade" id="delete-book-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -131,6 +87,5 @@
         </div>
     </div>
 </div>
-
 
 {% endblock %}

@@ -82,6 +82,7 @@ class Book(db.Model):
         return 0
 
     reviews = db.relationship('Review')
+    books_genres = db.relationship('Book_Genre')
 
 
 class Genre(db.Model):

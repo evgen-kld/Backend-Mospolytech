@@ -1,16 +1,35 @@
-from models import Book, Cover
+from models import Book, Cover, Book_Genre
 import hashlib
 import uuid
 import os
 from werkzeug.utils import secure_filename
 from app import db, app
 
+
 class BooksFilter:
     def __init__(self):
         self.query = Book.query
+        self.qwerty = Book_Genre.query
 
-    def perform(self):
+    def perform(self, title='', genres_list='', years_list='', amount_from='', amount_to='', author=''):
+        if title != '':
+            self.query = self.query.filter(Book.title.ilike(f'%{title}%'))
+        if genres_list != []:
+            self.qwerty =  self.qwerty.filter(Book_Genre.genres_id.in_(genres_list))
+            self.query = self.query.join(self.qwerty)
+        if years_list != []:
+            years_list = [int(x) for x in years_list]
+            self.query = self.query.filter(Book.year.in_(years_list))
+        if amount_from != '':
+            self.query = self.query.filter(Book.amount >= int(amount_from))
+        if amount_to != '':
+            self.query = self.query.filter(Book.amount <= int(amount_to))
+        if author != '':
+            self.query = self.query.filter(Book.author.ilike(f'%{author}%'))
+        print(self.query)
         return self.query.order_by(Book.year.desc())
+
+
 
 class ImageSaver:
     def __init__(self, file):

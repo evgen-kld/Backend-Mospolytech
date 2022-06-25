@@ -71,7 +71,7 @@ def edit(book_id):
         return redirect(url_for('index'))
 
 
-@bp.route('/<int:book_id>/show')
+@bp.route('/show/<int:book_id>')
 def show(book_id):
     book = Book.query.get(book_id)
     book_genre = Book_Genre.query.all()
@@ -85,7 +85,7 @@ def show(book_id):
     return render_template('book/show.html', book=book, book_genre=book_genre, img=img, review=review)
 
 
-@bp.route('/<int:book_id>/delete', methods=['POST'])
+@bp.route('/delete/<int:book_id>', methods=['POST'])
 @check_rights('delete')
 def delete(book_id):
     if request.method == 'POST':
@@ -102,7 +102,7 @@ def delete(book_id):
         return redirect(url_for('index'))
 
 
-@bp.route('/<int:book_id>/review', methods=['GET', 'POST'])
+@bp.route('/review/<int:book_id>', methods=['GET', 'POST'])
 @login_required
 def review(book_id):
     book = Book.query.get(book_id)
