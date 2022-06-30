@@ -98,16 +98,16 @@
             <div class="mb-5">
                 {{ render_pagination(pagination, request.endpoint, search_params) }}
             </div>
-            {% if current_user.is_authenticated and current_user.can('delete') %}
-            <div class="text-center my-3">
-                <a class="btn btn-lg btn-dark" href="{{ url_for('book.new') }}">Добавить новую книгу</a>
-            </div>
-            {% endif %}
         </div>
     </div>
     {% endif %}
     {% if not flag %}
-        <h3 class="title my-3 font-weight-bold text-center">Ничего не найдено</h3>
+    <h3 class="title my-3 font-weight-bold text-center">Ничего не найдено</h3>
+    {% endif %}
+    {% if current_user.is_authenticated and current_user.can('delete') %}
+    <div class="text-center my-3">
+        <a class="btn btn-lg btn-dark" href="{{ url_for('book.new') }}">Добавить новую книгу</a>
+    </div>
     {% endif %}
 </div>
 

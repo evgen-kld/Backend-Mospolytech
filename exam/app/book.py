@@ -3,6 +3,7 @@ from flask_login import current_user, login_required
 from app import db
 import os
 import bleach
+import markdown
 from auth import check_rights
 
 bp = Blueprint('book', __name__, url_prefix='/book')
@@ -74,6 +75,7 @@ def edit(book_id):
 @bp.route('/show/<int:book_id>')
 def show(book_id):
     book = Book.query.get(book_id)
+    book.description = markdown.markdown(book.description)
     book_genre = Book_Genre.query.all()
     img = Cover.query.filter_by(book_id=book_id).first()
     img = img.url

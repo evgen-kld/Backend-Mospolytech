@@ -53,8 +53,9 @@ class Role(db.Model):
 
 class Book_Genre(db.Model):
     __tablename__ = 'books_genres'
-    books_id = db.Column(db.Integer, db.ForeignKey('books.id', ondelete='CASCADE'), primary_key=True)
-    genres_id = db.Column(db.Integer, db.ForeignKey('genres.id', ondelete='CASCADE'), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
+    books_id = db.Column(db.Integer, db.ForeignKey('books.id', ondelete='CASCADE'), nullable=False)
+    genres_id = db.Column(db.Integer, db.ForeignKey('genres.id', ondelete='CASCADE'), nullable=False)
 
     book = db.relationship('Book')
     genre = db.relationship('Genre')

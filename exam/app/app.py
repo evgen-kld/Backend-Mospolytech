@@ -57,7 +57,6 @@ def index():
     title = request.args.get('title', '')
     genres_list = request.args.getlist('genre_id')
     years_list = request.args.getlist('year')
-    print(genres_list)
     amount_from = request.args.get('amount_from', '')
     amount_to = request.args.get('amount_to', '')
     author = request.args.get('author', '')
